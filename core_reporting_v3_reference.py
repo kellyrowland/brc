@@ -117,10 +117,8 @@ def get_api_query(service, table_id):
       metrics='ga:pageviews',
       dimensions='ga:pagePathLevel2,ga:pagePathLevel3',
       sort='-ga:pageviews',
-#      filters='ga:medium==organic',
-#      filters='ga:pagePath=*/high-performance-computing/*',
       start_index='1',
-      max_results='25')
+      max_results='100')
 
 
 def print_results(results):
@@ -143,7 +141,11 @@ def print_rows(results):
   print('Rows:')
   if results.get('rows', []):
     for row in results.get('rows'):
-      print('\t'.join(row))
+      # only looking for HPC pages right now
+      if u'/high-performance-computing/' in row:
+        # every page has the HPC bit as the first row entry, so remove it
+        del row[0]
+        print('\t'.join(row))
   else:
     print('No Rows Found')
 

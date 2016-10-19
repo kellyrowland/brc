@@ -112,13 +112,14 @@ def get_api_query(service, table_id):
 
   return service.data().ga().get(
       ids=table_id,
-      start_date='2015-10-13',
+      # this is the first date that Google Analytics has a non-zero number of views for
+      start_date='2014-09-18',
       end_date='2016-10-13',
       metrics='ga:pageviews',
       dimensions='ga:pagePathLevel2,ga:pagePathLevel3',
-      sort='-ga:pageviews',
+#      sort='-ga:pageviews',
       start_index='1',
-      max_results='100')
+      max_results='5000')
 
 
 def print_results(results):

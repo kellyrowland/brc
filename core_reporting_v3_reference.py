@@ -82,10 +82,14 @@ def main(argv):
       argv, 'analytics', 'v3', __doc__, __file__, parents=[argparser],
       scope='https://www.googleapis.com/auth/analytics.readonly')
 
+  # dates between which to collect data
+  start = '2014-09-18'
+  end = '2014-09-18'
+
   # Try to make a request to the API. Print the results or handle errors.
   try:
-    results = get_api_query(service, flags.table_id).execute()
-    print_results(results)
+    results = get_api_query(service, flags.table_id,start,end).execute()
+    print_results(results,start)
 
   except TypeError as error:
     # Handle errors in constructing a query.
@@ -102,7 +106,7 @@ def main(argv):
            'the application to re-authorize')
 
 
-def get_api_query(service, table_id):
+def get_api_query(service, table_id,start,end):
   """Returns a query object to retrieve data from the Core Reporting API.
 
   Args:
@@ -113,8 +117,10 @@ def get_api_query(service, table_id):
   return service.data().ga().get(
       ids=table_id,
       # this is the first date that Google Analytics has a non-zero number of views for
-      start_date='2014-09-18',
-      end_date='2016-10-13',
+#      start_date='2014-09-18',
+#      end_date='2014-09-18',
+      start_date = start,
+      end_date = end,
       metrics='ga:pageviews',
       dimensions='ga:pagePathLevel2,ga:pagePathLevel3',
 #      sort='-ga:pageviews',
@@ -122,31 +128,31 @@ def get_api_query(service, table_id):
       max_results='5000')
 
 
-def print_results(results):
+def print_results(results,date):
   """Prints all the results in the Core Reporting API Response.
 
   Args:
     results: The response returned from the Core Reporting API.
   """
 
-  print_rows(results)
+  print_rows(results,date)
 
 
-def print_rows(results):
+def print_rows(results,date):
   """Prints all the rows of data returned by the API.
 
   Args:
     results: The response returned from the Core Reporting API.
   """
 
-  print('Rows:')
+#  print('Rows:')
   if results.get('rows', []):
     for row in results.get('rows'):
       # only looking for HPC pages right now
       if u'/high-performance-computing/' in row:
         # every page has the HPC bit as the first row entry, so remove it
         del row[0]
-        print('\t'.join(row))
+        print('\t'.join(row)+'\t'+str(date))
   else:
     print('No Rows Found')
 

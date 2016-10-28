@@ -63,6 +63,7 @@ __author__ = 'api.nickm@gmail.com (Nick Mihailovski)'
 
 import argparse
 import sys
+import datetime
 
 from googleapiclient.errors import HttpError
 from googleapiclient import sample_tools
@@ -83,13 +84,24 @@ def main(argv):
       scope='https://www.googleapis.com/auth/analytics.readonly')
 
   # dates between which to collect data
-  start = '2014-09-18'
-  end = '2014-09-18'
+  # note that the HPC sites were first launched on September 18, 2014
+  start = datetime.date(2014,9,18)
+  end = datetime.date(2014,12,31)
+  num_days = end - start
+  date_list = [end - datetime.timedelta(days=x) for x in range(0, num_days.days+1)]
+  date_strings = []
+  for date in date_list:
+    month = "%02d" % (date.month,)
+    day = "%02d" % (date.day,)
+    date_strings.insert(0,(str(date.year)+'-'+str(month)+'-'+str(day))) 
 
   # Try to make a request to the API. Print the results or handle errors.
   try:
-    results = get_api_query(service, flags.table_id,start,end).execute()
-    print_results(results,start)
+    outfile = open("2014.txt","w")
+    for date in date_strings:
+      results = get_api_query(service, flags.table_id,date,date).execute()
+      print_results(results,date,outfile)
+    outfile.close()
 
   except TypeError as error:
     # Handle errors in constructing a query.
@@ -128,17 +140,17 @@ def get_api_query(service, table_id,start,end):
       max_results='5000')
 
 
-def print_results(results,date):
+def print_results(results,date,outfile):
   """Prints all the results in the Core Reporting API Response.
 
   Args:
     results: The response returned from the Core Reporting API.
   """
 
-  print_rows(results,date)
+  print_rows(results,date,outfile)
 
 
-def print_rows(results,date):
+def print_rows(results,date,outfile):
   """Prints all the rows of data returned by the API.
 
   Args:
@@ -152,7 +164,7 @@ def print_rows(results,date):
       if u'/high-performance-computing/' in row:
         # every page has the HPC bit as the first row entry, so remove it
         del row[0]
-        print('\t'.join(row)+'\t'+str(date))
+        outfile.write('\t'.join(row)+'\t'+str(date)+'\n')
   else:
     print('No Rows Found')
 

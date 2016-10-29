@@ -85,19 +85,19 @@ def main(argv):
 
   # dates between which to collect data
   # note that the HPC sites were first launched on September 18, 2014
-  start = datetime.date(2014,9,18)
-  end = datetime.date(2014,12,31)
+  start = datetime.date(2015,1,1)
+  end = datetime.date(2015,12,31)
   num_days = end - start
   date_list = [end - datetime.timedelta(days=x) for x in range(0, num_days.days+1)]
   date_strings = []
   for date in date_list:
-    month = "%02d" % (date.month,)
-    day = "%02d" % (date.day,)
+    month = "%02d" % (date.month,) # append leading zero if needed
+    day = "%02d" % (date.day,)     # append leading zero if needed
     date_strings.insert(0,(str(date.year)+'-'+str(month)+'-'+str(day))) 
 
   # Try to make a request to the API. Print the results or handle errors.
   try:
-    outfile = open("2014.txt","w")
+    outfile = open("2015.txt","w")
     for date in date_strings:
       results = get_api_query(service, flags.table_id,date,date).execute()
       print_results(results,date,outfile)

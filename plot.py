@@ -1,26 +1,36 @@
 import matplotlib.pyplot as plt
 import matplotlib.dates as dates
 
-f = open('2014.txt')
+f = open('2014-2015.txt')
 
 views = []
 vdates = []
+total_list = []
 
 for line in f.readlines():
-	if u'/user-guide' in line:
-		line = line.strip().split('\t')
-		views.append(line[1])
-		vdates.append(line[2])
+	line = line.strip().split('\t')
+	total_list.append((line[0],line[1],line[2]))
 
 f.close()
 
-plot_dates = dates.datestr2num(vdates)
+pages = set(i[0] for i in total_list)
 
-fig, ax = plt.subplots()
-fig.autofmt_xdate()
-ax.plot(plot_dates,views)
+for page in pages:
+	views = []
+	vdates = []
+	for i in total_list:
+		if page == i[0]:
+			views.append(i[1])
+			vdates.append(i[2])
+	plot_dates = dates.datestr2num(vdates)
 
-xfmt = dates.DateFormatter('%m-%d-%y')
-ax.xaxis.set_major_formatter(xfmt)
+	fig, ax = plt.subplots()
+	fig.autofmt_xdate()
+	ax.plot(plot_dates,views)
 
-plt.show()
+	xfmt = dates.DateFormatter('%m-%d-%y')
+	ax.xaxis.set_major_formatter(xfmt)
+
+	pagename = page.translate(None, '/') # remove leading forward slash
+	fig.savefig(str(pagename))
+	plt.close(fig)

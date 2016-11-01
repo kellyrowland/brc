@@ -1,4 +1,5 @@
 analytics.dat
 client_secrets.json
+*.png
 *.pyc
 *.txt

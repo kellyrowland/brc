@@ -32,5 +32,6 @@ for page in pages:
 	ax.xaxis.set_major_formatter(xfmt)
 
 	pagename = page.translate(None, '/') # remove leading forward slash
+	ax.set_title(str(pagename))
 	fig.savefig(str(pagename))
 	plt.close(fig)
